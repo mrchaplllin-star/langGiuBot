@@ -13,10 +13,21 @@ class AppConfig:
     node_env: str
 
 
-def _required(name: str) -> str:
-    value = os.getenv(name, "").strip()
+def _required(env_name: str) -> str:
+    """Return required env variable value with beginner-friendly validation."""
+    # Guard against accidental code edits like _required("12345:ABC...")
+    if ":" in env_name or env_name.startswith("-"):
+        raise ValueError(
+            "Invalid _required(...) usage. Pass environment variable name, "
+            "not the token value. Example: _required('TELEGRAM_BOT_TOKEN')."
+        )
+
+    value = os.getenv(env_name, "").strip()
     if not value:
-        raise ValueError(f"Missing required environment variable: {name}")
+        raise ValueError(
+            f"Missing required environment variable: {env_name}. "
+            "Create .env from .env.example and set all required values."
+        )
     return value
 
 
